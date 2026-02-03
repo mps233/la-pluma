@@ -1,83 +1,164 @@
-# MAA WebUI
+# La Pluma
 
-Mac 上 MAA CLI 的 WebUI 界面
+<div align="center">
+  <img src="client/public/logo.webp" alt="La Pluma Logo" width="120" />
+  <p><em>Mac 上 MAA CLI 的现代化 WebUI 界面</em></p>
+</div>
 
-## 技术栈
+## ✨ 特性
 
-- **前端**: React + Vite + Tailwind CSS
-- **后端**: Node.js + Express + Socket.io
-- **MAA CLI**: 通过子进程调用
+- 🎮 **自动化任务流程** - 启动游戏、理智作战、基建换班、自动公招、信用收支、领取奖励、关闭游戏
+- 🎯 **多关卡支持** - 每个关卡独立设置次数，支持活动关卡代号自动替换（HD-X → OR-X）
+- 🧠 **智能检测** - 资源本开放日检测、理智耗尽自动停止、游戏状态监控
+- ⏰ **定时任务** - 支持多个定时任务，实时显示执行状态和进度
+- 📱 **Telegram 通知** - 任务完成后发送通知，包含截图和详细总结
+- 🎨 **现代化 UI** - Tailwind CSS + Framer Motion，支持深色模式
+- 📲 **PWA 支持** - 可安装为独立应用，支持离线使用
+- 🔄 **实时更新** - WebSocket 实时推送任务状态和日志
 
-## 前置要求
+## 📋 前置要求
 
-- Node.js 18+
-- MAA CLI 已安装: `brew install MaaAssistantArknights/tap/maa-cli`
-- 已执行 `maa install` 安装 MaaCore
+- **macOS** 系统
+- **Node.js** 18+
+- **MAA CLI** 已安装：`brew install MaaAssistantArknights/tap/maa-cli`
+- 已执行 `maa install` 安装 MaaCore 及资源
 
-## 快速开始
+## 🚀 快速开始
 
-### 1. 安装依赖
+### 1. 克隆仓库
 
-\`\`\`bash
+```bash
+git clone https://github.com/mps233/la-pluma.git
+cd la-pluma
+```
+
+### 2. 安装依赖
+
+```bash
 # 安装所有依赖（根目录、前端、后端）
 npm run install:all
-\`\`\`
+```
 
-### 2. 启动开发服务器
+### 3. 启动服务
 
-\`\`\`bash
+```bash
 # 同时启动前端和后端
 npm run dev
 
 # 或分别启动
 npm run dev:client  # 前端: http://localhost:5173
 npm run dev:server  # 后端: http://localhost:3000
-\`\`\`
+```
 
-## 项目结构
+### 4. 访问应用
 
-\`\`\`
-.
-├── client/              # 前端 (React + Vite + Tailwind)
+打开浏览器访问 http://localhost:5173
+
+## 📦 项目结构
+
+```
+la-pluma/
+├── client/                    # 前端 (React + Vite + Tailwind CSS)
 │   ├── src/
-│   │   ├── components/  # UI 组件
-│   │   ├── services/    # API 调用
-│   │   └── App.jsx
-│   └── package.json
-├── server/              # 后端 (Node.js + Express)
-│   ├── routes/          # API 路由
-│   ├── services/        # MAA CLI 集成
-│   └── server.js
-├── .kiro/               # Kiro 配置和指导文档
-└── package.json
-\`\`\`
+│   │   ├── components/        # UI 组件
+│   │   │   ├── AutomationTasks.jsx    # 自动化任务
+│   │   │   ├── CombatTasks.jsx        # 战斗任务
+│   │   │   ├── RoguelikeTasks.jsx     # 肉鸽模式
+│   │   │   ├── LogViewer.jsx          # 日志查看
+│   │   │   ├── ConfigManager.jsx      # 配置管理
+│   │   │   ├── NotificationSettings.jsx # 通知设置
+│   │   │   └── ...
+│   │   ├── services/          # API 调用
+│   │   └── utils/             # 工具函数
+│   └── public/                # 静态资源（Logo、图标）
+├── server/                    # 后端 (Node.js + Express)
+│   ├── routes/                # API 路由
+│   │   ├── maa.js            # MAA CLI 接口
+│   │   └── notification.js   # 通知接口
+│   ├── services/              # 业务逻辑
+│   │   ├── maaService.js     # MAA CLI 集成
+│   │   ├── schedulerService.js # 定时任务调度
+│   │   ├── notificationService.js # 通知服务
+│   │   └── configStorageService.js # 配置存储
+│   └── data/                  # 用户配置数据
+└── .kiro/                     # 开发指导文档
+```
 
-## 核心功能
+## 🎯 核心功能
 
-- [x] MAA 控制
-- [x] MAA 日志查看
-- [x] MAA 配置管理
-- [ ] MAA 资源文件管理
-- [ ] MAA 任务管理
+### 自动化任务流程
 
-## API 接口
+- ✅ **启动游戏** - 自动启动明日方舟客户端
+- ✅ **理智作战** - 支持多关卡，每个关卡独立次数设置
+  - 自动替换活动关卡代号（HD-X → OR-X）
+  - 资源本开放日检测（CE-6、AP-5、CA-5、SK-5、LS-6）
+  - 理智耗尽自动停止后续关卡
+  - 支持剿灭作战（Annihilation）
+- ✅ **基建换班** - 自动收菜、换班、无人机加速
+- ✅ **自动公招** - 自动刷新、选择标签、确认招募
+- ✅ **信用收支** - 自动访问好友、收取信用、购买商品
+- ✅ **领取奖励** - 自动领取每日、每周、邮件等奖励
+- ✅ **关闭游戏** - 任务完成后自动关闭游戏
 
-### 获取版本信息
-\`\`\`
-GET /api/maa/version
-\`\`\`
+### 定时任务
 
-### 获取配置目录
-\`\`\`
-GET /api/maa/config-dir
-\`\`\`
+- 支持多个定时任务，每个任务独立配置
+- 实时显示执行状态和进度动画
+- 任务完成后自动发送 Telegram 通知
 
-### 执行命令
-\`\`\`
-POST /api/maa/execute
-Body: { "command": "list", "args": [] }
-\`\`\`
+### Telegram 通知
 
-## 开发指南
+- 任务完成通知（成功/失败/跳过统计）
+- 自动截图并发送
+- 详细的任务总结（关卡、次数、掉落、耗时）
 
-详细的开发指南和 MAA CLI 参考请查看 `.kiro/steering/` 目录下的文档。
+## ⚙️ 配置说明
+
+### ADB 连接配置
+
+在"自动化任务"页面配置 ADB 连接：
+
+- **ADB 路径**：默认 `/opt/homebrew/bin/adb`
+- **设备地址**：
+  - 本地模拟器：`emulator-5554` 或 `127.0.0.1:5555`
+  - 远程设备：`192.168.x.x:16384`（需要开启网络 ADB）
+
+### Telegram 通知配置
+
+在"通知设置"页面配置：
+
+1. 创建 Telegram Bot（通过 @BotFather）
+2. 获取 Bot Token
+3. 获取 Chat ID（通过 @userinfobot）
+4. 填入配置并测试
+
+## 🛠️ 技术栈
+
+- **前端框架**: React 18 + Vite
+- **UI 框架**: Tailwind CSS + Framer Motion
+- **后端**: Node.js + Express
+- **实时通信**: Socket.io
+- **MAA 集成**: 通过子进程调用 maa CLI 命令
+- **通知服务**: Telegram Bot API
+
+## 📝 开发指南
+
+详细的开发指南和 MAA CLI 参考请查看 `.kiro/steering/` 目录：
+
+- `tech.md` - 技术栈和常用命令
+- `structure.md` - 项目结构和代码组织
+- `product.md` - 产品概述和核心功能
+- `maa-cli-reference.md` - MAA CLI 完整参考文档
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+MIT License
+
+## 🙏 致谢
+
+- [MAA (MaaAssistantArknights)](https://github.com/MaaAssistantArknights/MaaAssistantArknights) - 明日方舟游戏助手
+- [maa-cli](https://github.com/MaaAssistantArknights/maa-cli) - MAA 命令行工具
