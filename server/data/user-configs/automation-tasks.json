@@ -1,0 +1,196 @@
+{
+  "taskFlow": [
+    {
+      "id": "startup-1769889150692",
+      "name": "启动游戏",
+      "description": "启动游戏并进入主界面",
+      "defaultParams": {
+        "clientType": "Official",
+        "adbPath": "/opt/homebrew/bin/adb",
+        "address": "127.0.0.1:16384"
+      },
+      "params": {
+        "clientType": "Official",
+        "adbPath": "/opt/homebrew/bin/adb",
+        "address": "192.168.50.103:16384"
+      },
+      "enabled": true,
+      "commandId": "startup"
+    },
+    {
+      "id": "fight-1769889151157",
+      "name": "理智作战",
+      "description": "自动刷关卡消耗理智",
+      "defaultParams": {
+        "stage": "1-7",
+        "medicine": 0,
+        "stone": 0
+      },
+      "params": {
+        "stage": "CE-6",
+        "medicine": "0",
+        "stone": 0,
+        "times": "",
+        "series": "0",
+        "stages": [
+          {
+            "stage": "Annihilation",
+            "times": "1"
+          },
+          "HD-7",
+          "CE-6",
+          "AP-5"
+        ]
+      },
+      "enabled": true,
+      "commandId": "fight"
+    },
+    {
+      "id": "infrast-1769889151553",
+      "name": "基建换班",
+      "description": "自动基建换班收菜",
+      "defaultParams": {
+        "mode": "0",
+        "facility": [
+          "Mfg",
+          "Trade",
+          "Power",
+          "Control",
+          "Reception",
+          "Office",
+          "Dorm"
+        ],
+        "drones": "Money",
+        "threshold": "0.3",
+        "replenish": false
+      },
+      "taskType": "Infrast",
+      "params": {
+        "mode": "0",
+        "facility": [
+          "Mfg",
+          "Trade",
+          "Power",
+          "Control",
+          "Reception",
+          "Office",
+          "Dorm"
+        ],
+        "drones": "Money",
+        "threshold": "0.3",
+        "replenish": true
+      },
+      "enabled": true,
+      "commandId": "infrast"
+    },
+    {
+      "id": "recruit-1769889152350",
+      "name": "自动公招",
+      "description": "自动公开招募",
+      "defaultParams": {
+        "refresh": true,
+        "select": [
+          4,
+          5,
+          6
+        ],
+        "confirm": [
+          3,
+          4
+        ],
+        "times": 4,
+        "set_time": true,
+        "expedite": false,
+        "expedite_times": 0,
+        "skip_robot": true
+      },
+      "taskType": "Recruit",
+      "params": {
+        "refresh": true,
+        "select": [
+          4,
+          5,
+          6
+        ],
+        "confirm": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "times": 4,
+        "set_time": true,
+        "expedite": false,
+        "expedite_times": 0,
+        "skip_robot": true
+      },
+      "enabled": true,
+      "commandId": "recruit"
+    },
+    {
+      "id": "mall-1769889152664",
+      "name": "信用收支",
+      "description": "访问好友、收取信用",
+      "defaultParams": {
+        "shopping": true,
+        "buy_first": "",
+        "blacklist": "",
+        "force_shopping_if_credit_full": false
+      },
+      "taskType": "Mall",
+      "params": {
+        "shopping": true,
+        "buy_first": "",
+        "blacklist": "",
+        "force_shopping_if_credit_full": false
+      },
+      "enabled": true,
+      "commandId": "mall"
+    },
+    {
+      "id": "award-1769889153469",
+      "name": "领取奖励",
+      "description": "领取每日/每周奖励",
+      "defaultParams": {
+        "award": true,
+        "mail": true,
+        "recruit": false,
+        "orundum": false,
+        "mining": false,
+        "specialaccess": false
+      },
+      "taskType": "Award",
+      "params": {
+        "award": true,
+        "mail": true,
+        "recruit": true,
+        "orundum": true,
+        "mining": true,
+        "specialaccess": true
+      },
+      "enabled": true,
+      "commandId": "award"
+    },
+    {
+      "id": "closedown-1769889153774",
+      "name": "关闭游戏",
+      "description": "关闭游戏客户端",
+      "defaultParams": {
+        "clientType": "Official"
+      },
+      "params": {
+        "clientType": "Official"
+      },
+      "enabled": true,
+      "commandId": "closedown"
+    }
+  ],
+  "schedule": {
+    "enabled": true,
+    "times": [
+      "04:28",
+      "12:03",
+      "20:00"
+    ]
+  }
+}
