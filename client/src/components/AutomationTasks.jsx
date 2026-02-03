@@ -78,7 +78,8 @@ export default function AutomationTasks() {
       defaultParams: { 
         clientType: 'Official',
         adbPath: '/opt/homebrew/bin/adb',
-        address: '127.0.0.1:16384'
+        address: '127.0.0.1:16384',
+        accountName: ''
       },
       paramFields: [
         { key: 'clientType', label: '客户端类型', type: 'select', options: [
@@ -89,6 +90,7 @@ export default function AutomationTasks() {
           { value: 'YoStarKR', label: '韩服' },
           { value: 'Txwy', label: '繁中服' }
         ]},
+        { key: 'accountName', label: '切换账号', type: 'text', placeholder: '留空则不切换', helper: '💡 输入已登录账号的部分字符即可，如 "123****4567" 可输入 "4567"' },
         { key: 'adbPath', label: 'ADB 路径', type: 'text', placeholder: '/opt/homebrew/bin/adb', helper: '💡 macOS 默认路径' },
         { key: 'address', label: '连接地址', type: 'text', placeholder: '127.0.0.1:16384', helper: '💡 MuMu 模拟器默认端口：16384' }
       ]
@@ -98,10 +100,11 @@ export default function AutomationTasks() {
       name: '理智作战', 
       icon: <Icons.Sword />,
       description: '自动刷关卡消耗理智',
-      defaultParams: { stage: '1-7', stages: [{ stage: '1-7', times: '' }], medicine: 0, stone: 0, series: 1 },
+      defaultParams: { stage: '1-7', stages: [{ stage: '1-7', times: '' }], medicine: 0, expiringMedicine: 0, stone: 0, series: 1 },
       paramFields: [
         { key: 'stages', label: '关卡', type: 'multi-stages', placeholder: '1-7 或 HD-7', timesPlaceholder: '次数', helper: '💡 使用 HD-数字 代表当前活动关卡，点击 + 添加更多关卡' },
         { key: 'medicine', label: '理智药', type: 'number', placeholder: '0', helper: '使用理智药数量' },
+        { key: 'expiringMedicine', label: '过期理智药', type: 'number', placeholder: '0', helper: '💡 优先使用 48 小时内过期的理智药' },
         { key: 'stone', label: '源石', type: 'number', placeholder: '0', helper: '使用源石数量' },
         { key: 'series', label: '连战', type: 'select', options: [
           { value: '-1', label: '禁用' },

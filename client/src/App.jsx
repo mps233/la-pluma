@@ -4,6 +4,7 @@ import CombatTasks from './components/CombatTasks'
 import RoguelikeTasks from './components/RoguelikeTasks'
 import LogViewer from './components/LogViewer'
 import ConfigManager from './components/ConfigManager'
+import DataStatistics from './components/DataStatistics'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
             </div>
             <div style={{ display: activeTab === 'logs' ? 'block' : 'none' }}>
               <LogViewer />
+            </div>
+            <div style={{ display: activeTab === 'statistics' ? 'block' : 'none' }}>
+              <DataStatistics />
             </div>
             <div style={{ display: activeTab === 'config' ? 'block' : 'none' }}>
               <ConfigManager />

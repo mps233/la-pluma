@@ -112,6 +112,10 @@ function buildCommand(task) {
     if (task.params.address) {
       extraArgs.push(`-a ${task.params.address}`);
     }
+    // 添加账号切换参数
+    if (commandId === 'startup' && task.params.accountName) {
+      extraArgs.push(`--account ${task.params.accountName}`);
+    }
   } else if (commandId === 'fight') {
     // 支持多个关卡（stages 数组，每个元素是 {stage, times}）或单个关卡（stage 字符串）
     let stages = task.params.stages || [{ stage: task.params.stage || '', times: task.params.times || '' }];
@@ -144,6 +148,9 @@ function buildCommand(task) {
     
     if (task.params.medicine !== undefined && task.params.medicine !== '' && task.params.medicine !== null) {
       params += ` -m ${task.params.medicine}`;
+    }
+    if (task.params.expiringMedicine !== undefined && task.params.expiringMedicine !== '' && task.params.expiringMedicine !== null) {
+      params += ` --expiring-medicine ${task.params.expiringMedicine}`;
     }
     if (task.params.stone !== undefined && task.params.stone !== '' && task.params.stone !== null) {
       params += ` --stone ${task.params.stone}`;

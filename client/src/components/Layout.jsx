@@ -19,6 +19,7 @@ export default function Layout({ children }) {
     { id: 'combat', name: '自动战斗', color: 'emerald' },
     { id: 'roguelike', name: '肉鸽模式', color: 'fuchsia' },
     { id: 'logs', name: '日志查看', color: 'blue' },
+    { id: 'statistics', name: '数据统计', color: 'cyan' },
     { id: 'config', name: '配置管理', color: 'orange' },
   ]
 
@@ -39,6 +40,10 @@ export default function Layout({ children }) {
       blue: {
         active: 'text-blue-700 dark:text-white bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-500/20 dark:to-cyan-500/20 border-blue-300 dark:border-blue-500/30',
         inactive: 'text-gray-600 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/5 border-transparent hover:border-blue-200 dark:hover:border-blue-500/20'
+      },
+      cyan: {
+        active: 'text-cyan-700 dark:text-white bg-gradient-to-r from-cyan-100 to-teal-100 dark:from-cyan-500/20 dark:to-teal-500/20 border-cyan-300 dark:border-cyan-500/30',
+        inactive: 'text-gray-600 dark:text-gray-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-500/5 border-transparent hover:border-cyan-200 dark:hover:border-cyan-500/20'
       },
       orange: {
         active: 'text-orange-700 dark:text-white bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-500/20 dark:to-amber-500/20 border-orange-300 dark:border-orange-500/30',

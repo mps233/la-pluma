@@ -300,4 +300,40 @@ export const maaApi = {
     })
     return response.json()
   },
+
+  // ========== 数据统计 ==========
+  
+  // 解析并保存仓库数据
+  async parseDepotData() {
+    const response = await fetch(`${API_BASE_URL}/maa/data/depot/parse`, {
+      method: 'POST',
+    })
+    return response.json()
+  },
+
+  // 解析并保存干员数据
+  async parseOperBoxData() {
+    const response = await fetch(`${API_BASE_URL}/maa/data/operbox/parse`, {
+      method: 'POST',
+    })
+    return response.json()
+  },
+
+  // 获取已保存的仓库数据
+  async getDepotData() {
+    const response = await fetch(`${API_BASE_URL}/maa/data/depot`)
+    return response.json()
+  },
+
+  // 获取已保存的干员数据
+  async getOperBoxData() {
+    const response = await fetch(`${API_BASE_URL}/maa/data/operbox`)
+    return response.json()
+  },
+
+  // 获取所有干员列表
+  async getAllOperators() {
+    const response = await fetch(`${API_BASE_URL}/maa/data/all-operators`)
+    return response.json()
+  },
 }

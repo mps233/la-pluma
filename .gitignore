@@ -8,3 +8,7 @@ dist
 # IDE 配置
 .kiro/
 .vscode/
+
+# 数据文件（保留目录结构）
+server/data/*.json
+!server/data/user-configs/

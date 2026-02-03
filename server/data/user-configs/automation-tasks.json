@@ -12,7 +12,8 @@
       "params": {
         "clientType": "Official",
         "adbPath": "/opt/homebrew/bin/adb",
-        "address": "192.168.50.103:16384"
+        "address": "192.168.50.103:16384",
+        "accountName": ""
       },
       "enabled": true,
       "commandId": "startup"
@@ -40,7 +41,8 @@
           "HD-7",
           "CE-6",
           "AP-5"
-        ]
+        ],
+        "expiringMedicine": "99"
       },
       "enabled": true,
       "commandId": "fight"

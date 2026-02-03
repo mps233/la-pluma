@@ -2,6 +2,7 @@ import express from 'express';
 import { execMaaCommand, getMaaVersion, getMaaConfigDir, getConfig, saveConfig, execDynamicTask, captureScreen, getDebugScreenshots, getTaskStatus, getCurrentActivity, replaceActivityCode, stopCurrentTask, getLogFiles, readLogFile, getRealtimeLogs, clearRealtimeLogs, cleanupLogs, testAdbConnection } from '../services/maaService.js';
 import { setupSchedule, stopSchedule, getScheduleStatus, executeScheduleNow, setupAutoUpdate, getAutoUpdateStatus, getScheduleExecutionStatus } from '../services/schedulerService.js';
 import { saveUserConfig, loadUserConfig, getAllUserConfigs, deleteUserConfig } from '../services/configStorageService.js';
+import { parseDepotData, parseOperBoxData, getDepotData, getOperBoxData, getAllOperators } from '../services/dataParserService.js';
 
 const router = express.Router();
 
@@ -443,6 +444,193 @@ router.delete('/user-config/:configType', async (req, res) => {
     res.json(result);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ========== 数据统计 API ==========
+
+// 解析并保存仓库数据
+router.post('/data/depot/parse', async (req, res) => {
+  try {
+    const result = await parseDepotData();
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: `仓库数据已保存，共 ${result.itemCount} 种物品`,
+        data: {
+          path: result.path,
+          itemCount: result.itemCount,
+          items: result.items || []
+        }
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        error: '未找到仓库识别数据，请先执行仓库识别任务' 
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 解析并保存干员数据
+router.post('/data/operbox/parse', async (req, res) => {
+  try {
+    const result = await parseOperBoxData();
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: `干员数据已保存，共 ${result.operCount} 名干员`,
+        data: {
+          path: result.path,
+          operCount: result.operCount
+        }
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        error: '未找到干员识别数据，请先执行干员识别任务' 
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取已保存的仓库数据
+router.get('/data/depot', async (req, res) => {
+  try {
+    const data = await getDepotData();
+    if (data) {
+      res.json({ success: true, data });
+    } else {
+      res.json({ success: false, error: '暂无仓库数据' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取已保存的干员数据
+router.get('/data/operbox', async (req, res) => {
+  try {
+    const data = await getOperBoxData();
+    if (data) {
+      res.json({ success: true, data });
+    } else {
+      res.json({ success: false, error: '暂无干员数据' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取所有干员列表
+router.get('/data/all-operators', async (req, res) => {
+  try {
+    const operators = await getAllOperators();
+    res.json({ success: true, data: operators });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 图片代理接口 - 干员头像
+router.get('/operator-avatar/:charId', async (req, res) => {
+  try {
+    const { charId } = req.params;
+    
+    // 尝试多个图片源
+    const imageUrls = [
+      `https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/${charId}.png`,
+      `https://cdn.jsdelivr.net/gh/Aceship/Arknight-Images@main/avatars/${charId}.png`,
+      `https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/avatars/${charId}.png`
+    ];
+    
+    let imageData = null;
+    let contentType = 'image/png';
+    
+    // 使用 https 模块获取图片
+    const https = await import('https');
+    
+    for (const url of imageUrls) {
+      try {
+        await new Promise((resolve, reject) => {
+          https.get(url, { timeout: 5000 }, (response) => {
+            if (response.statusCode === 200) {
+              const chunks = [];
+              response.on('data', (chunk) => chunks.push(chunk));
+              response.on('end', () => {
+                imageData = Buffer.concat(chunks);
+                contentType = response.headers['content-type'] || 'image/png';
+                resolve();
+              });
+            } else {
+              reject(new Error(`HTTP ${response.statusCode}`));
+            }
+          }).on('error', reject).on('timeout', () => {
+            reject(new Error('Timeout'));
+          });
+        });
+        
+        if (imageData) break;
+      } catch (err) {
+        console.log(`Failed to fetch from ${url}:`, err.message);
+        continue;
+      }
+    }
+    
+    if (imageData) {
+      res.set('Content-Type', contentType);
+      res.set('Cache-Control', 'public, max-age=86400'); // 缓存1天
+      res.send(imageData);
+    } else {
+      res.status(404).json({ success: false, error: '图片未找到' });
+    }
+  } catch (error) {
+    console.error('图片代理错误:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 图片代理接口 - 物品图标
+router.get('/item-icon/:iconId', async (req, res) => {
+  try {
+    const { iconId } = req.params;
+    
+    // 只使用 GitHub 源
+    const url = `https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/refs/heads/main/item/${iconId}.png`;
+    
+    const https = await import('https');
+    
+    await new Promise((resolve, reject) => {
+      const request = https.get(url, { timeout: 10000 }, (response) => {
+        if (response.statusCode === 200) {
+          const chunks = [];
+          response.on('data', (chunk) => chunks.push(chunk));
+          response.on('end', () => {
+            const imageData = Buffer.concat(chunks);
+            const contentType = response.headers['content-type'] || 'image/png';
+            res.set('Content-Type', contentType);
+            res.set('Cache-Control', 'public, max-age=86400'); // 缓存1天
+            res.send(imageData);
+            resolve();
+          });
+        } else {
+          reject(new Error(`HTTP ${response.statusCode}`));
+        }
+      });
+      
+      request.on('error', reject);
+      request.on('timeout', () => {
+        request.destroy();
+        reject(new Error('Timeout'));
+      });
+    });
+  } catch (error) {
+    console.log(`获取物品图标失败 ${req.params.iconId}:`, error.message);
+    res.status(404).json({ success: false, error: '图片未找到' });
   }
 });
 
