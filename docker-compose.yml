@@ -1,8 +1,13 @@
 services:
   la-pluma:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # 使用 Docker Hub 预构建镜像（推荐）
+    image: miaona/la-pluma:latest
+    
+    # 或者本地构建（如果需要修改代码）
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    
     container_name: la-pluma
     volumes:
       # 持久化用户配置和数据
@@ -11,8 +16,6 @@ services:
       - /vol1/1000/la-pluma/config:/root/.config/maa
       # 持久化 MAA 数据目录（MaaCore、资源文件等）
       - /vol1/1000/la-pluma/maacore:/root/.local/share/maa
-      # 注意：maa-cli 二进制文件不再挂载，直接使用镜像内的版本
-      # 更新 maa-cli 会持久化到配置目录，重启容器后仍然有效
     environment:
       - NODE_ENV=production
       - PORT=3000  # 容器内监听 3000 端口
@@ -26,18 +29,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/maa/version"]
-      interval: 60s  # 改为 60 秒检查一次
+      interval: 60s
       timeout: 10s
       retries: 3
       start_period: 60s
-
-# 注意：使用 host 网络模式时不需要定义 networks 和 volumes
-# networks:
-#   la-pluma-network:
-#     driver: bridge
-
-# volumes:
-#   maa-config:
-#     driver: local
-#   maa-cli-bin:
-#     driver: local

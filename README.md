@@ -106,9 +106,10 @@ docker run -d \
 git clone https://github.com/mps233/La-pluma.git
 cd La-pluma
 
-# 2. 编辑 docker-compose.yml，修改 volumes 和环境变量
+# 2. 编辑 docker-compose.yml，修改 volumes 和 ADB_ADDRESS
+nano docker-compose.yml
 
-# 3. 启动服务
+# 3. 启动服务（会自动拉取镜像）
 docker-compose up -d
 
 # 4. 查看日志
@@ -117,12 +118,15 @@ docker-compose logs -f
 
 #### 本地构建镜像
 
-```bash
-# 构建镜像
-docker-compose build
+如果需要修改代码后构建：
 
-# 启动容器
-docker-compose up -d
+```bash
+# 编辑 docker-compose.yml
+# 注释掉: image: miaona/la-pluma:latest
+# 取消注释: build 部分
+
+# 构建并启动
+docker-compose up -d --build
 ```
 
 **配置说明**：
