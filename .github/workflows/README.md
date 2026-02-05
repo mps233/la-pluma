@@ -37,7 +37,7 @@
 
 #### 3. 在 GitHub 添加 Secrets
 
-1. 打开你的 GitHub 仓库
+1. 打开你的 GitHub 仓库：https://github.com/mps233/La-pluma
 2. 点击 Settings → Secrets and variables → Actions
 3. 点击 "New repository secret"
 4. 添加两个 secrets：
@@ -89,7 +89,7 @@ GitHub Actions 会自动推送多个标签：
 
 ### 查看构建状态
 
-1. 打开 GitHub 仓库
+1. 打开 GitHub 仓库：https://github.com/mps233/La-pluma
 2. 点击 Actions 标签
 3. 查看最新的工作流运行
 

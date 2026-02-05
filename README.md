@@ -6,7 +6,7 @@
   
   [![Docker Pulls](https://img.shields.io/docker/pulls/mps233/la-pluma)](https://hub.docker.com/r/mps233/la-pluma)
   [![Docker Image Size](https://img.shields.io/docker/image-size/mps233/la-pluma/latest)](https://hub.docker.com/r/mps233/la-pluma)
-  [![GitHub Actions](https://github.com/mps233/la-pluma/workflows/Docker%20Build%20and%20Push/badge.svg)](https://github.com/mps233/la-pluma/actions)
+  [![GitHub Actions](https://github.com/mps233/La-pluma/workflows/Docker%20Build%20and%20Push/badge.svg)](https://github.com/mps233/La-pluma/actions)
 </div>
 
 ## ✨ 特性
@@ -49,8 +49,8 @@ La Pluma 支持 macOS、Linux 和 Windows 系统。项目会自动检测操作�
 #### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/mps233/la-pluma.git
-cd la-pluma
+git clone https://github.com/mps233/La-pluma.git
+cd La-pluma
 ```
 
 #### 2. 安装依赖
@@ -103,8 +103,8 @@ docker run -d \
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/mps233/la-pluma.git
-cd la-pluma
+git clone https://github.com/mps233/La-pluma.git
+cd La-pluma
 
 # 2. 编辑 docker-compose.yml，修改 volumes 和环境变量
 
