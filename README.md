@@ -20,6 +20,24 @@
 - 📲 **PWA 支持** - 可安装为独立应用，支持离线使用
 - 🔄 **实时更新** - WebSocket 实时推送任务状态和日志
 
+## 📸 界面预览
+
+### Web 端
+
+<div align="center">
+  <img src="screenshots/web-light.png" alt="Web 端浅色模式" width="45%" />
+  <img src="screenshots/web-dark.png" alt="Web 端深色模式" width="45%" />
+  <p><em>Web 端 - 浅色模式 & 深色模式</em></p>
+</div>
+
+### 移动端
+
+<div align="center">
+  <img src="screenshots/m-light.png" alt="移动端浅色模式" width="30%" />
+  <img src="screenshots/m-dark.png" alt="移动端深色模式" width="30%" />
+  <p><em>移动端 - 浅色模式 & 深色模式</em></p>
+</div>
+
 ## 📋 前置要求
 
 - **操作系统**: macOS / Linux / Windows
