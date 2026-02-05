@@ -216,38 +216,45 @@ export default function MaaControl() {
     setMessage('⏳ 正在获取作业信息...')
     
     try {
-      const copilotResponse = await fetch(`https://prts.maa.plus/copilot/get/${copilotId}`)
+      // 使用后端代理接口，避免 CORS 问题
+      const copilotResponse = await maaApi.getCopilotInfo(copilotId)
       
-      if (copilotResponse.ok) {
-        const copilotData = await copilotResponse.json()
-        if (copilotData.status_code === 200 && copilotData.data) {
-          const content = JSON.parse(copilotData.data.content)
-          setCopilotSetInfo({
-            type: 'single',
-            id: copilotId,
-            name: content.doc?.title || '未命名作业',
-            stage: content.stage_name,
-            operators: content.opers?.map(op => op.name).join('、') || '未知'
-          })
-          setMessage(`✅ 找到作业：${content.doc?.title || content.stage_name}`)
-        } else if (copilotData.status_code === 404) {
-          setCopilotSetInfo({
-            type: 'set',
-            id: copilotId,
-            name: '作业集',
-            note: '这是一个作业集，包含多个关卡。执行时会自动添加 "s" 后缀。',
-            autoAddS: !hasS
-          })
-          setMessage(`✅ 识别为作业集 ID: ${copilotId}${!hasS ? '（将自动添加 s 后缀）' : ''}`)
-        } else {
-          setMessage('❌ 作业不存在')
-        }
-      } else {
+      if (copilotResponse.status_code === 200 && copilotResponse.data) {
+        const content = JSON.parse(copilotResponse.data.content)
+        setCopilotSetInfo({
+          type: 'single',
+          id: copilotId,
+          name: content.doc?.title || '未命名作业',
+          stage: content.stage_name,
+          operators: content.opers?.map(op => op.name).join('、') || '未知'
+        })
+        setMessage(`✅ 找到作业：${content.doc?.title || content.stage_name}`)
+      } else if (copilotResponse.status_code === 404) {
         setCopilotSetInfo({
           type: 'set',
           id: copilotId,
           name: '作业集',
           note: '这是一个作业集，包含多个关卡。执行时会自动添加 "s" 后缀。',
+          autoAddS: !hasS
+        })
+        setMessage(`✅ 识别为作业集 ID: ${copilotId}${!hasS ? '（将自动添加 s 后缀）' : ''}`)
+      } else {
+        setMessage('❌ 作业不存在')
+      }
+    } catch (error) {
+      // 网络错误时也假设是作业集
+      setCopilotSetInfo({
+        type: 'set',
+        id: copilotId,
+        name: '作业集',
+        note: '这是一个作业集，包含多个关卡。执行时会自动添加 "s" 后缀。',
+        autoAddS: !hasS
+      })
+      setMessage(`✅ 识别为作业集 ID: ${copilotId}${!hasS ? '（将自动添加 s 后缀）' : ''}`)
+    } finally {
+      setIsLoadingSet(false)
+    }
+  }
           autoAddS: !hasS
         })
         setMessage(`✅ 识别为作业集 ID: ${copilotId}${!hasS ? '（将自动添加 s 后缀）' : ''}`)

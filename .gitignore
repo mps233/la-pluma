@@ -9,6 +9,8 @@ dist
 .kiro/
 .vscode/
 
-# 数据文件（保留目录结构）
-server/data/*.json
-!server/data/user-configs/
+# 用户配置和数据（包含敏感信息，不要提交）
+server/data/
+
+# Docker 数据目录
+docker-data/

@@ -40,21 +40,23 @@ La Pluma 支持 macOS、Linux 和 Windows 系统。项目会自动检测操作�
 
 ## 🚀 快速开始
 
-### 1. 克隆仓库
+### 方式 1: 本地安装（推荐）
+
+#### 1. 克隆仓库
 
 ```bash
 git clone https://github.com/mps233/la-pluma.git
 cd la-pluma
 ```
 
-### 2. 安装依赖
+#### 2. 安装依赖
 
 ```bash
 # 安装所有依赖（根目录、前端、后端）
 npm run install:all
 ```
 
-### 3. 启动服务
+#### 3. 启动服务
 
 ```bash
 # 同时启动前端和后端
@@ -65,9 +67,48 @@ npm run dev:client  # 前端: http://localhost:5173
 npm run dev:server  # 后端: http://localhost:3000
 ```
 
-### 4. 访问应用
+#### 4. 访问应用
 
 打开浏览器访问 http://localhost:5173
+
+### 方式 2: Docker 部署
+
+> ✨ **完整支持**: Docker 镜像包含 WebUI + MAA CLI + MaaCore，开箱即用！
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/mps233/la-pluma.git
+cd la-pluma
+
+# 2. 启动服务（首次启动会自动安装 MaaCore，需要 5-10 分钟）
+docker-compose up -d
+
+# 3. 查看日志
+docker-compose logs -f
+
+# 4. 访问应用
+# 浏览器打开 http://localhost:3055
+```
+
+**配置说明**：
+- 宿主机端口：`3055`，容器内端口：`3000`
+- 数据持久化：`./docker-data/` 和 `./server/data/`
+- ADB 连接：在 WebUI 中配置设备地址（如 `127.0.0.1:5555`）
+
+**常用命令**：
+```bash
+# 重启服务
+docker-compose restart
+
+# 停止服务
+docker-compose down
+
+# 更新镜像
+git pull && docker-compose up -d --build
+
+# 进入容器
+docker-compose exec la-pluma sh
+```
 
 ## 📦 项目结构
 

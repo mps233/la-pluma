@@ -6,6 +6,10 @@ import { homedir } from 'os';
 
 const execPromise = promisify(exec);
 
+// MAA CLI 路径
+// Docker 环境使用完整路径，本地环境使用 'maa' 依赖 PATH
+const MAA_CLI_PATH = process.env.MAA_CLI_PATH || (process.env.DOCKER_ENV ? '/usr/local/bin/maa' : 'maa');
+
 // 全局任务状态追踪
 const taskStatus = {
   isRunning: false,
@@ -77,15 +81,19 @@ export function setTaskStatus(isRunning, taskName = null, taskType = null, proce
 /**
  * 执行 MAA CLI 命令（支持后台异步执行）
  */
-export async function execMaaCommand(command, args = [], taskName = null, taskType = null, waitForCompletion = false) {
-  const fullCommand = `maa ${command} ${args.join(' ')}`;
-  addLog('INFO', `执行命令: ${fullCommand}, 等待完成: ${waitForCompletion}`);
+export async function execMaaCommand(command, args = [], taskName = null, taskType = null, waitForCompletion = false, silent = false) {
+  const fullCommand = `${MAA_CLI_PATH} ${command} ${args.join(' ')}`;
+  
+  // 静默模式下不输出日志（用于健康检查等频繁调用）
+  if (!silent) {
+    addLog('INFO', `执行命令: ${fullCommand}, 等待完成: ${waitForCompletion}`);
+  }
   
   // 如果有任务名称且不需要等待完成，使用后台异步执行
   if (taskName && !waitForCompletion) {
     return new Promise((resolve, reject) => {
       // 使用 spawn 而不是 exec，这样可以独立运行
-      const childProcess = spawn('maa', [command, ...args], {
+      const childProcess = spawn(MAA_CLI_PATH, [command, ...args], {
         detached: false,
         stdio: ['ignore', 'pipe', 'pipe']
       });
@@ -163,7 +171,7 @@ export async function execMaaCommand(command, args = [], taskName = null, taskTy
   // 需要等待完成（任务流程中的串行执行）
   else if (taskName && waitForCompletion) {
     return new Promise((resolve, reject) => {
-      const childProcess = spawn('maa', [command, ...args], {
+      const childProcess = spawn(MAA_CLI_PATH, [command, ...args], {
         detached: false,
         stdio: ['ignore', 'pipe', 'pipe']
       });
@@ -281,8 +289,8 @@ export async function execMaaCommand(command, args = [], taskName = null, taskTy
 /**
  * 获取 MAA 版本信息
  */
-export async function getMaaVersion() {
-  const result = await execMaaCommand('version');
+export async function getMaaVersion(silent = false) {
+  const result = await execMaaCommand('version', [], false, silent);
   return result.stdout;
 }
 

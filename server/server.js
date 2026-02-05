@@ -27,39 +27,38 @@ const getLocalIpAddress = () => {
 
 const localIp = getLocalIpAddress();
 
-// 允许的来源列表
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174', 
-  'http://localhost:5175',
-  `http://${localIp}:5173`,
-  `http://${localIp}:5174`,
-  `http://${localIp}:5175`
-];
-
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins,
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // 允许没有 origin 的请求（比如移动应用、Postman 等）
-    if (!origin) return callback(null, true);
-    
-    // 检查是否在允许列表中，或者是否来自本地网络
-    if (allowedOrigins.includes(origin) || origin.match(/^http:\/\/192\.168\.\d+\.\d+:517[3-5]$/)) {
-      callback(null, true);
-    } else {
-      callback(null, true); // 开发环境允许所有来源
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 app.use(express.json());
+
+// 生产环境：服务前端静态文件
+if (process.env.NODE_ENV === 'production') {
+  const { fileURLToPath } = await import('url');
+  const { dirname, join } = await import('path');
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const clientDistPath = join(__dirname, '..', 'client', 'dist');
+  
+  app.use(express.static(clientDistPath));
+  
+  // 所有非 API 路由都返回 index.html（支持前端路由）
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.sendFile(join(clientDistPath, 'index.html'));
+  });
+}
 
 // API 路由
 app.use('/api/maa', maaRoutes);
@@ -82,7 +81,6 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`服务器运行在:`);
   console.log(`  - 本地: http://localhost:${PORT}`);
   console.log(`  - 网络: http://${localIp}:${PORT}`);
-  console.log(`\n手机访问请使用: http://${localIp}:5173`);
   console.log('');
   printPathConfig();
 });

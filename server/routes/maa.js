@@ -1,6 +1,6 @@
 import express from 'express';
 import { execMaaCommand, getMaaVersion, getMaaConfigDir, getConfig, saveConfig, execDynamicTask, captureScreen, getDebugScreenshots, getTaskStatus, getCurrentActivity, replaceActivityCode, stopCurrentTask, getLogFiles, readLogFile, getRealtimeLogs, clearRealtimeLogs, cleanupLogs, testAdbConnection } from '../services/maaService.js';
-import { setupSchedule, stopSchedule, getScheduleStatus, executeScheduleNow, setupAutoUpdate, getAutoUpdateStatus, getScheduleExecutionStatus } from '../services/schedulerService.js';
+import { setupSchedule, stopSchedule, getScheduleStatus, executeScheduleNow, setupAutoUpdate, getAutoUpdateStatus, getScheduleExecutionStatus, stopScheduleExecution } from '../services/schedulerService.js';
 import { saveUserConfig, loadUserConfig, getAllUserConfigs, deleteUserConfig } from '../services/configStorageService.js';
 import { parseDepotData, parseOperBoxData, getDepotData, getOperBoxData, getAllOperators } from '../services/dataParserService.js';
 
@@ -40,9 +40,19 @@ router.post('/realtime-logs/clear', async (req, res) => {
 // 终止当前任务
 router.post('/stop-task', async (req, res) => {
   try {
-    const stopped = stopCurrentTask();
-    if (stopped) {
-      res.json({ success: true, message: '任务已终止' });
+    // 1. 停止当前正在运行的 MAA 命令
+    const taskStopped = stopCurrentTask();
+    
+    // 2. 停止整个定时任务流程
+    const scheduleStopped = stopScheduleExecution();
+    
+    if (taskStopped || scheduleStopped) {
+      const message = taskStopped && scheduleStopped 
+        ? '已终止当前任务并停止任务流程' 
+        : taskStopped 
+          ? '已终止当前任务' 
+          : '已设置停止标志，将在当前任务完成后终止流程';
+      res.json({ success: true, message });
     } else {
       res.json({ success: false, message: '没有正在运行的任务' });
     }
@@ -54,7 +64,9 @@ router.post('/stop-task', async (req, res) => {
 // 获取 MAA 版本信息
 router.get('/version', async (req, res) => {
   try {
-    const version = await getMaaVersion();
+    // 健康检查请求不输出日志
+    const isHealthCheck = req.headers['user-agent']?.includes('curl');
+    const version = await getMaaVersion(isHealthCheck);
     res.json({ success: true, data: version });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -360,23 +372,73 @@ router.post('/update-core', async (req, res) => {
   }
 });
 
-// 更新 MAA CLI (通过 Homebrew)
+// 更新 MAA CLI
 router.post('/update-cli', async (req, res) => {
   try {
     const { exec } = await import('child_process');
     const { promisify } = await import('util');
+    const os = await import('os');
     const execAsync = promisify(exec);
     
-    const { stdout, stderr } = await execAsync('brew upgrade maa-cli');
-    res.json({ 
-      success: true, 
-      data: { 
-        output: stdout || stderr,
-        message: '更新完成'
-      } 
-    });
+    // MAA CLI 路径
+    // Docker 环境使用完整路径，本地环境使用 'maa' 依赖 PATH
+    const MAA_CLI_PATH = process.env.MAA_CLI_PATH || (process.env.DOCKER_ENV ? '/usr/local/bin/maa' : 'maa');
+    
+    // 检查是否在 Docker 环境中
+    const isDocker = process.env.NODE_ENV === 'production' && 
+                     await execAsync('test -f /.dockerenv').then(() => true).catch(() => false);
+    
+    if (isDocker) {
+      // Docker 环境：支持更新，更新会持久化到 volume
+      try {
+        const { stdout, stderr } = await execAsync(`${MAA_CLI_PATH} self update`);
+        res.json({ 
+          success: true, 
+          data: { 
+            output: stdout || stderr,
+            message: 'MAA CLI 更新完成（Docker 环境）\n更新已持久化到 volume，重启容器后仍然有效'
+          } 
+        });
+      } catch (error) {
+        res.json({
+          success: false,
+          error: error.message,
+          message: 'MAA CLI 更新失败，请检查网络连接或查看日志'
+        });
+      }
+    } else {
+      // 本地环境：根据操作系统选择更新方式
+      const platform = os.platform();
+      let command;
+      
+      if (platform === 'darwin') {
+        // macOS: 使用 Homebrew
+        command = 'brew upgrade maa-cli';
+      } else if (platform === 'linux') {
+        // Linux: 使用 maa self update
+        command = `${MAA_CLI_PATH} self update`;
+      } else if (platform === 'win32') {
+        // Windows: 使用 maa self update
+        command = `${MAA_CLI_PATH} self update`;
+      } else {
+        throw new Error(`不支持的操作系统: ${platform}`);
+      }
+      
+      const { stdout, stderr } = await execAsync(command);
+      res.json({ 
+        success: true, 
+        data: { 
+          output: stdout || stderr,
+          message: `MAA CLI 更新完成 (${platform})`
+        } 
+      });
+    }
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      message: '更新失败。如果在 Docker 环境中，请重新构建镜像。'
+    });
   }
 });
 
@@ -631,6 +693,19 @@ router.get('/item-icon/:iconId', async (req, res) => {
   } catch (error) {
     console.log(`获取物品图标失败 ${req.params.iconId}:`, error.message);
     res.status(404).json({ success: false, error: '图片未找到' });
+  }
+});
+
+// 代理 PRTS 作业 API（解决 CORS 问题）
+router.get('/copilot/get/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await fetch(`https://prts.maa.plus/copilot/get/${id}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('获取作业信息失败:', error.message);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

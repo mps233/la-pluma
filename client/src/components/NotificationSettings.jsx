@@ -5,10 +5,12 @@ import Icons from './Icons'
 // API 基础 URL
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
+  const port = window.location.port || '3000';
+  
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3000';
+    return `http://localhost:${port}`;
   }
-  return `http://${hostname}:3000`;
+  return `http://${hostname}:${port}`;
 };
 
 const API_BASE_URL = getApiBaseUrl();

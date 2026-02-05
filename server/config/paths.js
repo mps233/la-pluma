@@ -28,17 +28,69 @@ function getMaaConfigDir() {
 }
 
 /**
+ * 获取 MAA 数据目录路径（存放 MaaCore、资源文件等）
+ */
+function getMaaDataDir() {
+  const home = homedir();
+  const os = platform();
+  
+  switch (os) {
+    case 'darwin': // macOS
+      return join(home, 'Library', 'Application Support', 'com.loong.maa');
+    
+    case 'linux':
+      // Linux 使用 XDG 标准
+      const xdgDataHome = process.env.XDG_DATA_HOME || join(home, '.local', 'share');
+      return join(xdgDataHome, 'maa');
+    
+    case 'win32': // Windows
+      const localAppData = process.env.LOCALAPPDATA || join(home, 'AppData', 'Local');
+      return join(localAppData, 'maa');
+    
+    default:
+      // 默认使用 Linux 风格
+      return join(home, '.local', 'share', 'maa');
+  }
+}
+
+/**
+ * 获取 MAA state 目录路径（存放日志、缓存等运行时数据）
+ */
+function getMaaStateDir() {
+  const home = homedir();
+  const os = platform();
+  
+  switch (os) {
+    case 'darwin': // macOS
+      return join(home, 'Library', 'Application Support', 'com.loong.maa');
+    
+    case 'linux':
+      // Linux 使用 XDG 标准
+      const xdgStateHome = process.env.XDG_STATE_HOME || join(home, '.local', 'state');
+      return join(xdgStateHome, 'maa');
+    
+    case 'win32': // Windows
+      const localAppData = process.env.LOCALAPPDATA || join(home, 'AppData', 'Local');
+      return join(localAppData, 'maa');
+    
+    default:
+      // 默认使用 Linux 风格
+      return join(home, '.local', 'state', 'maa');
+  }
+}
+
+/**
  * 获取 MAA 日志文件路径
  */
 export function getMaaLogPath() {
-  return join(getMaaConfigDir(), 'debug', 'asst.log');
+  return join(getMaaStateDir(), 'debug', 'asst.log');
 }
 
 /**
  * 获取 MAA 资源目录路径
  */
 export function getMaaResourceDir() {
-  return join(getMaaConfigDir(), 'resource');
+  return join(getMaaDataDir(), 'resource');
 }
 
 /**
@@ -93,6 +145,8 @@ export function printPathConfig() {
   console.log('=== MAA 路径配置 ===');
   console.log('操作系统:', getOSType());
   console.log('配置目录:', getMaaConfigDir());
+  console.log('数据目录:', getMaaDataDir());
+  console.log('State目录:', getMaaStateDir());
   console.log('资源目录:', getMaaResourceDir());
   console.log('日志文件:', getMaaLogPath());
   console.log('==================');

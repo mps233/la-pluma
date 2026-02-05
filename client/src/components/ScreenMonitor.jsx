@@ -5,10 +5,12 @@ import Icons from './Icons'
 // 自动检测 API 地址
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
+  const port = window.location.port || '3000';
+  
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3000/api';
+    return `http://localhost:${port}/api`;
   }
-  return `http://${hostname}:3000/api`;
+  return `http://${hostname}:${port}/api`;
 };
 
 export default function ScreenMonitor({ adbPath = '/opt/homebrew/bin/adb', address = '127.0.0.1:16384' }) {

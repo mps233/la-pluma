@@ -6,6 +6,10 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+// MAA CLI 路径
+// Docker 环境使用完整路径，本地环境使用 'maa' 依赖 PATH
+const MAA_CLI_PATH = process.env.MAA_CLI_PATH || (process.env.DOCKER_ENV ? '/usr/local/bin/maa' : 'maa');
+
 // 存储所有定时任务
 const scheduledJobs = new Map();
 
@@ -17,7 +21,8 @@ const scheduleExecutionStatus = {
   totalSteps: 0,
   currentTask: null,
   message: '',
-  startTime: null
+  startTime: null,
+  shouldStop: false  // 添加停止标志
 };
 
 /**
@@ -25,6 +30,18 @@ const scheduleExecutionStatus = {
  */
 export function getScheduleExecutionStatus() {
   return { ...scheduleExecutionStatus };
+}
+
+/**
+ * 停止当前正在执行的任务流程
+ */
+export function stopScheduleExecution() {
+  if (scheduleExecutionStatus.isRunning) {
+    console.log(`[定时任务] 设置停止标志，将在当前任务完成后终止流程`);
+    scheduleExecutionStatus.shouldStop = true;
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -179,7 +196,8 @@ async function executeTaskFlow(taskFlow, scheduleId) {
     totalSteps: taskFlow.filter(t => t.enabled).length,
     currentTask: null,
     message: '开始执行任务流程',
-    startTime: Date.now()
+    startTime: Date.now(),
+    shouldStop: false  // 重置停止标志
   });
   
   const startTime = Date.now();
@@ -194,6 +212,15 @@ async function executeTaskFlow(taskFlow, scheduleId) {
   let adbConfig = { adbPath: '/opt/homebrew/bin/adb', address: '127.0.0.1:16384' };
   
   for (let i = 0; i < enabledTasks.length; i++) {
+    // 检查是否需要停止
+    if (scheduleExecutionStatus.shouldStop) {
+      console.log(`[定时任务 ${scheduleId}] 检测到停止信号，终止任务流程`);
+      updateScheduleStatus({
+        message: '任务流程已被用户终止'
+      });
+      break;
+    }
+    
     const task = enabledTasks[i];
     const commandId = task.commandId || task.id.split('-')[0];
     
@@ -417,10 +444,28 @@ async function executeTaskFlow(taskFlow, scheduleId) {
                     task: `${task.name} (${stage})`,
                     reason: '关卡未开放'
                   });
-                } else {
-                  // 真正的错误
-                  throw error;
+                  continue; // 继续执行下一个关卡
                 }
+                
+                // 检查是否是剿灭奖励已领完（MAA 无法识别剿灭入口）
+                if (stage.includes('Annihilation') || stage.includes('@Annihilation')) {
+                  console.log(`[定时任务 ${scheduleId}] 剿灭关卡 ${stage} 可能奖励已领完或未找到入口，跳过`);
+                  skippedCount++;
+                  skipped.push({
+                    task: `${task.name} (${stage})`,
+                    reason: '剿灭奖励已领完或未找到入口'
+                  });
+                  continue; // 继续执行下一个关卡
+                }
+                
+                // 其他错误，记录失败但继续执行
+                console.log(`[定时任务 ${scheduleId}] 关卡 ${stage} 执行失败: ${errorMsg}`);
+                failedCount++;
+                failed.push({
+                  task: `${task.name} (${stage})`,
+                  error: errorMsg
+                });
+                // 不再抛出错误，继续执行下一个关卡
               }
               
               // 关卡之间等待2秒
@@ -804,8 +849,36 @@ export function setupAutoUpdate(config) {
         
         if (updateCli) {
           console.log('[自动更新] 开始更新 MAA CLI...');
-          await execAsync('brew upgrade maa-cli');
-          console.log('[自动更新] MAA CLI 更新完成');
+          
+          // 检查是否在 Docker 环境
+          const isDocker = process.env.NODE_ENV === 'production' && 
+                           await execAsync('test -f /.dockerenv').then(() => true).catch(() => false);
+          
+          if (isDocker) {
+            // Docker 环境：支持更新，更新会持久化
+            try {
+              await execAsync(`${MAA_CLI_PATH} self update`);
+              console.log('[自动更新] MAA CLI 更新完成（Docker 环境，已持久化）');
+            } catch (error) {
+              console.error('[自动更新] MAA CLI 更新失败:', error.message);
+            }
+          } else {
+            // 根据操作系统选择更新方式
+            const os = await import('os');
+            const platform = os.platform();
+            let command;
+            
+            if (platform === 'darwin') {
+              command = 'brew upgrade maa-cli';
+            } else if (platform === 'linux' || platform === 'win32') {
+              command = `${MAA_CLI_PATH} self update`;
+            } else {
+              throw new Error(`不支持的操作系统: ${platform}`);
+            }
+            
+            await execAsync(command);
+            console.log(`[自动更新] MAA CLI 更新完成 (${platform})`);
+          }
         }
         
         console.log('[自动更新] 所有更新任务完成');

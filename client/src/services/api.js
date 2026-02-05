@@ -3,14 +3,16 @@
 // 如果是通过 IP 访问，使用相同的 IP 地址
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
+  // 直接使用当前页面的端口，不使用环境变量
+  const port = window.location.port || '3000';
   
   // 如果是 localhost 或 127.0.0.1，使用 localhost
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3000/api';
+    return `http://localhost:${port}/api`;
   }
   
   // 否则使用当前访问的 IP 地址
-  return `http://${hostname}:3000/api`;
+  return `http://${hostname}:${port}/api`;
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -334,6 +336,12 @@ export const maaApi = {
   // 获取所有干员列表
   async getAllOperators() {
     const response = await fetch(`${API_BASE_URL}/maa/data/all-operators`)
+    return response.json()
+  },
+
+  // 获取作业信息（通过后端代理，避免 CORS）
+  async getCopilotInfo(copilotId) {
+    const response = await fetch(`${API_BASE_URL}/maa/copilot/get/${copilotId}`)
     return response.json()
   },
 }

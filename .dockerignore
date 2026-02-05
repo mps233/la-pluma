@@ -1,0 +1,54 @@
+# 依赖
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# 构建产物（Docker 会在镜像内重新构建）
+client/dist/
+client/.vite/
+
+# 日志
+*.log
+npm-debug.log*
+logs/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# 测试
+coverage/
+.nyc_output/
+
+# 临时文件
+tmp/
+temp/
+
+# 用户配置和数据（不要打包进镜像）
+server/data/
+docker-data/
+
+# 文档
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
