@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: mps233/la-pluma
+  IMAGE_NAME: miaona/la-pluma
 
 jobs:
   build-and-push:
@@ -62,6 +62,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # 如果仓库不存在，Docker Hub 会自动创建（需要正确的权限）
 
       - name: Image digest
         run: echo ${{ steps.meta.outputs.tags }}

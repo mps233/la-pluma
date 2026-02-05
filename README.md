@@ -4,8 +4,8 @@
   <img src="client/public/logo.webp" alt="La Pluma Logo" width="120" />
   <p><em>Mac 上 MAA CLI 的现代化 WebUI 界面</em></p>
   
-  [![Docker Pulls](https://img.shields.io/docker/pulls/mps233/la-pluma)](https://hub.docker.com/r/mps233/la-pluma)
-  [![Docker Image Size](https://img.shields.io/docker/image-size/mps233/la-pluma/latest)](https://hub.docker.com/r/mps233/la-pluma)
+  [![Docker Pulls](https://img.shields.io/docker/pulls/miaona/la-pluma)](https://hub.docker.com/r/miaona/la-pluma)
+  [![Docker Image Size](https://img.shields.io/docker/image-size/miaona/la-pluma/latest)](https://hub.docker.com/r/miaona/la-pluma)
   [![GitHub Actions](https://github.com/mps233/La-pluma/workflows/Docker%20Build%20and%20Push/badge.svg)](https://github.com/mps233/La-pluma/actions)
 </div>
 
@@ -83,7 +83,7 @@ npm run dev:server  # 后端: http://localhost:3000
 
 ```bash
 # 拉取最新镜像
-docker pull mps233/la-pluma:latest
+docker pull miaona/la-pluma:latest
 
 # 运行容器
 docker run -d \
@@ -93,7 +93,7 @@ docker run -d \
   -v /path/to/config:/root/.config/maa \
   -v /path/to/maacore:/root/.local/share/maa \
   -e ADB_ADDRESS=192.168.x.x:5555 \
-  mps233/la-pluma:latest
+  miaona/la-pluma:latest
 
 # 访问应用
 # 浏览器打开 http://localhost:3055

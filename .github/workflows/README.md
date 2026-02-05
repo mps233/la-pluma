@@ -44,7 +44,7 @@
 
    **DOCKER_USERNAME**
    - Name: `DOCKER_USERNAME`
-   - Value: 你的 Docker Hub 用户名（如 `mps233`）
+   - Value: 你的 Docker Hub 用户名（如 `miaona`）
 
    **DOCKER_PASSWORD**
    - Name: `DOCKER_PASSWORD`
@@ -63,7 +63,7 @@ git push
 GitHub Actions 会自动：
 1. 构建 Docker 镜像
 2. 推送到 Docker Hub
-3. 标签：`mps233/la-pluma:latest`
+3. 标签：`miaona/la-pluma:latest`
 
 #### 发布版本（推送 tag）
 
@@ -74,10 +74,10 @@ git push origin v1.0.0
 ```
 
 GitHub Actions 会自动推送多个标签：
-- `mps233/la-pluma:v1.0.0`
-- `mps233/la-pluma:1.0`
-- `mps233/la-pluma:1`
-- `mps233/la-pluma:latest`
+- `miaona/la-pluma:v1.0.0`
+- `miaona/la-pluma:1.0`
+- `miaona/la-pluma:1`
+- `miaona/la-pluma:latest`
 
 #### 手动触发
 
@@ -97,10 +97,10 @@ GitHub Actions 会自动推送多个标签：
 
 ```bash
 # 拉取最新版本
-docker pull mps233/la-pluma:latest
+docker pull miaona/la-pluma:latest
 
 # 拉取指定版本
-docker pull mps233/la-pluma:v1.0.0
+docker pull miaona/la-pluma:v1.0.0
 
 # 运行容器
 docker run -d \
@@ -110,7 +110,7 @@ docker run -d \
   -v /path/to/config:/root/.config/maa \
   -v /path/to/maacore:/root/.local/share/maa \
   -e ADB_ADDRESS=127.0.0.1:5555 \
-  mps233/la-pluma:latest
+  miaona/la-pluma:latest
 ```
 
 ### 多架构支持
