@@ -867,23 +867,37 @@ export default function AutomationTasks() {
           
           {/* 状态指示器 */}
           <div className="flex items-center space-x-4">
-            {currentActivity && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium border bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/30 flex items-center space-x-1.5 sm:space-x-2"
-              >
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                {/* 手机端只显示代号，桌面端显示完整信息 */}
-                <span className="hidden sm:inline">当前活动: {activityName || currentActivity}</span>
-                <span className="sm:hidden">{currentActivity}</span>
-                {activityName && (
-                  <span className="text-xs opacity-75 hidden sm:inline">({currentActivity})</span>
-                )}
-              </motion.div>
-            )}
+            {/* 活动状态 - 始终显示 */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium border flex items-center space-x-1.5 sm:space-x-2 ${
+                currentActivity 
+                  ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/30'
+                  : 'bg-gray-50 dark:bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-500/30'
+              }`}
+            >
+              {currentActivity ? (
+                <>
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  {/* 手机端只显示代号，桌面端显示完整信息 */}
+                  <span className="hidden sm:inline">当前活动: {activityName || currentActivity}</span>
+                  <span className="sm:hidden">{currentActivity}</span>
+                  {activityName && (
+                    <span className="text-xs opacity-75 hidden sm:inline">({currentActivity})</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span>长草中～</span>
+                </>
+              )}
+            </motion.div>
             {message && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
