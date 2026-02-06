@@ -720,24 +720,35 @@ export async function replaceActivityCode(stage, clientType = 'Official') {
  * 终止当前正在运行的任务
  */
 export function stopCurrentTask() {
+  if (!taskStatus.isRunning) {
+    return { success: false, message: '当前没有正在运行的任务' };
+  }
+  
   if (taskStatus.process) {
     console.log('终止任务:', taskStatus.taskName);
+    addLog('WARN', `正在终止任务: ${taskStatus.taskName}`);
+    
     try {
-      taskStatus.process.kill('SIGTERM');
-      // 如果 SIGTERM 不起作用，3秒后强制 SIGKILL
-      setTimeout(() => {
-        if (taskStatus.process && !taskStatus.process.killed) {
-          console.log('强制终止任务');
-          taskStatus.process.kill('SIGKILL');
-        }
-      }, 3000);
+      // 直接使用 SIGKILL 强制终止，不等待
+      console.log('使用 SIGKILL 强制终止进程');
+      addLog('WARN', '使用 SIGKILL 强制终止进程');
+      taskStatus.process.kill('SIGKILL');
+      
+      setTaskStatus(false);
+      return { success: true, message: '已强制终止任务' };
     } catch (error) {
       console.error('终止任务失败:', error);
+      addLog('ERROR', `终止任务失败: ${error.message}`);
+      setTaskStatus(false);
+      return { success: false, message: `终止失败: ${error.message}` };
     }
+  } else {
+    // 进程引用不存在，但状态显示正在运行
+    // 这种情况可能是任务刚启动还没有进程引用
+    addLog('WARN', '任务正在启动中，无法立即终止');
     setTaskStatus(false);
-    return true;
+    return { success: true, message: '任务正在启动中，已标记为停止' };
   }
-  return false;
 }
 
 /**

@@ -6,6 +6,7 @@ import {
   sendToChannel,
   testNotificationChannel,
 } from '../services/notificationService.js';
+import { initTelegramBot, stopTelegramBot } from '../services/telegramBotService.js';
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
@@ -43,8 +44,8 @@ async function saveConfig(config) {
   }
 }
 
-// 初始化时加载配置
-loadConfig();
+// 导出加载配置函数供服务器启动时调用
+export { loadConfig };
 
 // 获取通知配置
 router.get('/config', async (req, res) => {
@@ -62,7 +63,23 @@ router.post('/config', async (req, res) => {
     const config = req.body;
     setNotificationConfig(config);
     await saveConfig(config);
-    res.json({ success: true, message: '配置已保存' });
+    
+    // 重启 Telegram Bot
+    if (config.channels?.telegram) {
+      console.log('[通知配置] 重启 Telegram Bot...');
+      stopTelegramBot();
+      
+      // 等待一下再启动
+      setTimeout(() => {
+        initTelegramBot({
+          enabled: config.channels.telegram.enabled,
+          botToken: config.channels.telegram.botToken,
+          chatId: config.channels.telegram.chatId
+        });
+      }, 1000);
+    }
+    
+    res.json({ success: true, message: '配置已保存，Telegram Bot 已重启' });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

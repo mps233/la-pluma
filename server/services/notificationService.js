@@ -380,18 +380,9 @@ export function setNotificationConfig(config) {
  * 获取通知配置
  */
 export function getNotificationConfig() {
-  // 返回配置的副本，隐藏敏感信息
-  const safeCopy = JSON.parse(JSON.stringify(notificationConfig));
-  
-  // 隐藏 token 等敏感信息
-  Object.keys(safeCopy.channels).forEach(channelName => {
-    const channel = safeCopy.channels[channelName];
-    if (channel.botToken) {
-      channel.botToken = channel.botToken ? '***已设置***' : '';
-    }
-  });
-  
-  return safeCopy;
+  // 返回完整配置（不隐藏敏感信息）
+  // 前端需要完整的 token 才能正确保存
+  return JSON.parse(JSON.stringify(notificationConfig));
 }
 
 /**
