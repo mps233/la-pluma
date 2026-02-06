@@ -437,12 +437,12 @@ async function executeTaskFlow(taskFlow, scheduleId) {
                 }
                 
                 // 检查是否是因为关卡未开放导致的错误
-                if (errorMsg.includes('stage not open') || errorMsg.includes('关卡未开放')) {
-                  console.log(`[定时任务 ${scheduleId}] 关卡 ${stage} 未开放，跳过`);
+                if (errorMsg.includes('stage not open') || errorMsg.includes('关卡未开放') || errorMsg.includes('MaaCore returned an error')) {
+                  console.log(`[定时任务 ${scheduleId}] 关卡 ${stage} 可能未开放或不存在，跳过`);
                   skippedCount++;
                   skipped.push({
                     task: `${task.name} (${stage})`,
-                    reason: '关卡未开放'
+                    reason: '关卡未开放或不存在'
                   });
                   continue; // 继续执行下一个关卡
                 }
@@ -461,7 +461,7 @@ async function executeTaskFlow(taskFlow, scheduleId) {
                 // 其他错误，记录失败但继续执行
                 console.log(`[定时任务 ${scheduleId}] 关卡 ${stage} 执行失败: ${errorMsg}`);
                 failedCount++;
-                failed.push({
+                errors.push({
                   task: `${task.name} (${stage})`,
                   error: errorMsg
                 });
