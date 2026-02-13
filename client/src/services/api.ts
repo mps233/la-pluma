@@ -838,4 +838,83 @@ export async function getDropStatistics(days: number = 7): Promise<ApiResponse> 
   return response.json()
 }
 
+// ==================== 森空岛 API ====================
+
+/**
+ * 发送森空岛验证码
+ */
+export async function sklandSendCode(phone: string): Promise<ApiResponse> {
+  const response = await fetch(`${API_BASE_URL}/skland/send-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone })
+  })
+  return response.json()
+}
+
+/**
+ * 森空岛登录（使用验证码或密码）
+ */
+export async function sklandLogin(phone: string, codeOrPassword: string, savePassword: boolean = false): Promise<ApiResponse> {
+  const response = await fetch(`${API_BASE_URL}/skland/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, code: codeOrPassword, savePassword })
+  })
+  return response.json()
+}
+
+/**
+ * 森空岛登出
+ */
+export async function sklandLogout(): Promise<ApiResponse> {
+  const response = await fetch(`${API_BASE_URL}/skland/logout`, {
+    method: 'POST'
+  })
+  return response.json()
+}
+
+/**
+ * 获取森空岛登录状态
+ */
+export async function getSklandStatus(): Promise<ApiResponse> {
+  const response = await fetch(`${API_BASE_URL}/skland/status`)
+  return response.json()
+}
+
+/**
+ * 获取森空岛玩家完整数据
+ */
+export async function getSklandPlayerData(useCache: boolean = true): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/skland/player-data?cache=${useCache}`)
+    const data = await response.json()
+    
+    // 如果响应不是 200，返回错误
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error || '获取玩家数据失败'
+      }
+    }
+    
+    return data
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '网络请求失败'
+    }
+  }
+}
+
+/**
+ * 刷新森空岛玩家数据（强制从服务器获取最新数据）
+ */
+export async function refreshSklandPlayerData(): Promise<ApiResponse> {
+  const response = await fetch(`${API_BASE_URL}/skland/refresh`, {
+    method: 'POST'
+  })
+  return response.json()
+}
+
 export default maaApi

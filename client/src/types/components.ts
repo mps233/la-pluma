@@ -356,6 +356,8 @@ export interface CopilotSearchResult {
     uri: string
     views: number
     hotScore: number
+    stageName?: string
+    title?: string
   }>
   recommended?: {
     uri: string
@@ -369,6 +371,8 @@ export interface ParadoxSearchResult {
     uri: string
     views: number
     hotScore: number
+    stageName?: string
+    title?: string
   }>
   recommended?: {
     uri: string
@@ -397,7 +401,7 @@ export interface AutoUpdateConfig {
 }
 
 export interface ConfigSection {
-  id: 'connection' | 'resource' | 'instance'
+  id: 'connection' | 'resource' | 'instance' | 'skland'
   name: string
   icon: string
 }

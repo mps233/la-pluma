@@ -12,7 +12,7 @@ export const useUIStore = create<UIState>()(
       (set) => ({
         // State
         theme: 'dark',
-        activeTab: 'automation',
+        activeTab: 'dashboard',
         modals: {},
         
         // Actions

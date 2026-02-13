@@ -16,12 +16,13 @@ export default function Layout({ children }: LayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const tabs = [
+    { id: 'dashboard', name: '控制台', color: 'cyan' as const },
     { id: 'automation', name: '自动化任务', color: 'violet' as const },
-    { id: 'combat', name: '自动战斗', color: 'emerald' as const },
+    { id: 'combat', name: '自动战斗', color: 'teal' as const },
     { id: 'roguelike', name: '肉鸽模式', color: 'fuchsia' as const },
     { id: 'training', name: '干员养成', color: 'amber' as const },
     { id: 'logs', name: '日志查看', color: 'blue' as const },
-    { id: 'statistics', name: '数据统计', color: 'teal' as const },
+    { id: 'statistics', name: '数据统计', color: 'emerald' as const },
     { id: 'config', name: '配置管理', color: 'orange' as const },
   ]
 

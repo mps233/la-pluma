@@ -90,8 +90,8 @@ export default function Button({
   // 处理自定义渐变色
   let gradientStyles = ''
   if (variant === 'gradient' && gradientFrom && gradientTo) {
-    const presetKey = `${gradientFrom}-${gradientTo}`
-    gradientStyles = gradientPresets[presetKey] || gradientPresets['violet-purple']
+    const presetKey = `${gradientFrom}-${gradientTo}` as keyof typeof gradientPresets
+    gradientStyles = (presetKey in gradientPresets ? gradientPresets[presetKey] : gradientPresets['violet-purple']) as string
   }
   
   const isDisabled = disabled || loading

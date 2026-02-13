@@ -1,4 +1,5 @@
 import Layout from './components/Layout'
+import Dashboard from './components/Dashboard'
 import AutomationTasks from './components/AutomationTasks'
 import CombatTasks from './components/CombatTasks'
 import RoguelikeTasks from './components/RoguelikeTasks'
@@ -14,6 +15,9 @@ function App() {
       <Layout>
         {({ activeTab }) => (
           <>
+            <div style={{ display: activeTab === 'dashboard' ? 'block' : 'none' }}>
+              <Dashboard />
+            </div>
             <div style={{ display: activeTab === 'automation' ? 'block' : 'none' }}>
               <AutomationTasks />
             </div>

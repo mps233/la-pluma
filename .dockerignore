@@ -45,6 +45,9 @@ temp/
 server/data/
 docker-data/
 
+# 学习参考资料
+study/
+
 # 文档
 *.md
 !README.md

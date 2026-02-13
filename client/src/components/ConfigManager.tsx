@@ -3,6 +3,7 @@ import { maaApi } from '../services/api'
 import { motion } from 'framer-motion'
 import Icons from './Icons'
 import { PageHeader, StatusIndicator, Card, CardHeader, CardContent, Button, Input, Select, Checkbox } from './common'
+import SklandConfig from './SklandConfig'
 import type { 
   ConfigManagerProps, 
   MaaConnectionConfig, 
@@ -28,7 +29,7 @@ interface ChangelogItem {
 
 export default function ConfigManager({}: ConfigManagerProps) {
   const [statusMessage, setStatusMessage] = useState<string>('')
-  const [configType, setConfigType] = useState<'connection' | 'resource' | 'instance'>('connection')
+  const [configType, setConfigType] = useState<'connection' | 'resource' | 'instance' | 'skland'>('connection')
   const [configData, setConfigData] = useState<MaaConnectionConfig>({
     adb_path: 'adb',
     address: '127.0.0.1:5555',
@@ -346,6 +347,7 @@ export default function ConfigManager({}: ConfigManagerProps) {
     { id: 'connection', name: '连接配置', icon: '🔌' },
     { id: 'resource', name: '资源配置', icon: '📦' },
     { id: 'instance', name: '实例选项', icon: '⚡' },
+    { id: 'skland', name: '森空岛', icon: '🏝️' },
   ]
 
   return (
@@ -839,6 +841,7 @@ export default function ConfigManager({}: ConfigManagerProps) {
                     </div>
                   </div>
                 )}
+                {configType === 'skland' && <SklandConfig />}
               </CardContent>
             </Card>
           </div>

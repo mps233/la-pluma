@@ -7,7 +7,9 @@
     "start": "node server.js",
     "fetch-materials": "node scripts/fetch-operator-materials.js",
     "fetch-formulas": "node scripts/fetch-material-formulas.js && node scripts/merge-formulas.js",
-    "fetch-all-materials": "node scripts/fetch-all-materials.js"
+    "fetch-all-materials": "node scripts/fetch-all-materials.js",
+    "fetch-stages": "node scripts/fetch-stage-data.js",
+    "fetch-assets": "node scripts/fetch-game-assets.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

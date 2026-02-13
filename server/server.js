@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import maaRoutes from './routes/maa.js';
 import notificationRoutes, { loadConfig as loadNotificationConfig } from './routes/notification.js';
 import operatorTrainingRoutes from './routes/operatorTraining.js';
+import sklandRoutes from './routes/skland.js';
 import { setSocketIO } from './services/schedulerService.js';
 import { initTelegramBot } from './services/telegramBotService.js';
 import { getNotificationConfig } from './services/notificationService.js';
@@ -72,6 +73,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/maa', maaRoutes);
 app.use('/api/notification', notificationRoutes);
 app.use('/api/operator-training', operatorTrainingRoutes);
+app.use('/api/skland', sklandRoutes);
 
 // WebSocket 连接
 io.on('connection', (socket) => {
